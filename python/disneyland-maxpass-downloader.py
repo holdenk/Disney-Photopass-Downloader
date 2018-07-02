@@ -79,7 +79,12 @@ def process_encounters(encounters):
             print (url)
             if url:  # one final check to make sure the url is defined
                 print('File ' + filename)
-                urllib.urlretrieve(url, filename)  # gets the file and saves it
+                # Skip download if target already exists but stll update metadata.
+                if os.path.isfile(filename):
+                    print('Skipping dl - already downloaded')
+                else:
+                    print('Fetching...')
+                    urllib.urlretrieve(url, filename)  # gets the file and saves it
                 date_created_exif_format = datetime.datetime.strftime(date_created, '%Y:%m:%d-%H:%M:%S')
                 try:
                     call(['jhead', '-mkexif', filename])  # initialize exif

@@ -5,9 +5,9 @@ import sys
 import string
 import time
 import re  # regex
-import httplib, urllib, urllib2  # url encode, image saving
+import http.client, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse  # url encode, image saving
 import json
-from cookielib import CookieJar
+from http.cookiejar import CookieJar
 import datetime
 from subprocess import call  # call linux command to set exif data
 
@@ -35,7 +35,7 @@ else:
 
 # Initialize cookie jar and session
 cookies = CookieJar()
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookies))
+opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookies))
 
 print("Load login page")
 
@@ -51,7 +51,7 @@ csrf_key = csrf_key[len(csrf_key) - 2]  # get the second to last item (last item
 
 print("POST login info")
 ### Post the login page with credentials (and cookies). Save the cookies.
-post_data = urllib.urlencode({'pep_csrf': csrf_key, 'username': config.username, 'password': config.password})
+post_data = urllib.parse.urlencode({'pep_csrf': csrf_key, 'username': config.username, 'password': config.password})
 login_post = opener.open('https://disneyland.disney.go.com/login/?returnUrl=https%3A%2F%2Fdisneyland.disney.go.com%2Fphotopass', post_data)
 print(login_post)
 
@@ -63,7 +63,7 @@ print("Get photo URLs & details")
 ### Grab the list of photos with their unique ids and medium resolution urls
 details_url_list = opener.open("https://disneyland.disney.go.com/photopass-api/all-media?pagenum=1&pagesize=20&sortAscending=false")
 details_list = json.load(details_url_list)
-print (json.dumps(details_list, sort_keys=True, indent=4))
+print((json.dumps(details_list, sort_keys=True, indent=4)))
 
 print("Save photos")
 
@@ -78,13 +78,13 @@ def process_encounters(encounters):
             date_created = datetime.datetime.strptime(photo['captureDate'], "%Y-%m-%dT%H:%M:%SZ")
             print (url)
             if url:  # one final check to make sure the url is defined
-                print('File ' + filename)
+                print(('File ' + filename))
                 # Skip download if target already exists but stll update metadata.
                 if os.path.isfile(filename):
                     print('Skipping dl - already downloaded')
                 else:
                     print('Fetching...')
-                    urllib.urlretrieve(url, filename)  # gets the file and saves it
+                    urllib.request.urlretrieve(url, filename)  # gets the file and saves it
                 date_created_exif_format = datetime.datetime.strftime(date_created, '%Y:%m:%d-%H:%M:%S')
                 try:
                     call(['jhead', '-mkexif', filename])  # initialize exif

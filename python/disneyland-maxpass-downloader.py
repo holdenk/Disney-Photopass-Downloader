@@ -94,6 +94,8 @@ def process_encounters(encounters):
                     print("'jhead' is not installed. EXIF and OS timestamp not set.")
                 try:
                     call(['exiftool', '-GPSLatitude="33.8121"', '-GPSLongitude="-117.918976"', filename]) # Set lat long to disneyland
+                except OSError as e:
+                    print("exiftool not installed, not updating lat/lon")
             print('')
 
 

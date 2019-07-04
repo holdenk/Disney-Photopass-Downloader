@@ -44,15 +44,15 @@ login_page = opener.open('https://disneyland.disney.go.com/login/?returnUrl=http
 # cookies are automatically saved.
 
 # grab the unique CSRF key. parse it.
-csrf_key = re.search('id="pep_csrf" value=".*"', login_page.read())
+csrf_key = re.search('id="pep_csrf" value=".*"', login_page.read().decode('utf-8'))
 csrf_key = csrf_key.group(0)
-csrf_key = string.split(csrf_key, "\"")  # split on double quote. easiest way.
+csrf_key = str.split(csrf_key, "\"")  # split on double quote. easiest way.
 csrf_key = csrf_key[len(csrf_key) - 2]  # get the second to last item (last item is empty). array is 0-based, length is 1-based, so subtract 2
 
 print("POST login info")
 ### Post the login page with credentials (and cookies). Save the cookies.
 post_data = urllib.parse.urlencode({'pep_csrf': csrf_key, 'username': config.username, 'password': config.password})
-login_post = opener.open('https://disneyland.disney.go.com/login/?returnUrl=https%3A%2F%2Fdisneyland.disney.go.com%2Fphotopass', post_data)
+login_post = opener.open('https://disneyland.disney.go.com/login/?returnUrl=https%3A%2F%2Fdisneyland.disney.go.com%2Fphotopass', post_data.encode('utf-8'))
 print(login_post)
 
 fetch_gallery = opener.open('https://disneyland.disney.go.com/photopass/gallery')
